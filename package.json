@@ -1,0 +1,50 @@
+{
+  "name": "@romezzz/gendiff",
+  "version": "0.0.1",
+  "description": "hexlet second project",
+  "bin": {
+    "gendiff": "dist/bin/gendiff.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Romez/backend-project-lvl2.git"
+  },
+  "keywords": [
+    "diff"
+  ],
+  "author": "Roman Ushakov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Romez/backend-project-lvl2/issues",
+    "email": "roman.ushakov.899@gmail.com"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "homepage": "https://github.com/Romez/backend-project-lvl2#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "babel-eslint": "^10.0.2",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.2.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^22.15.2",
+    "jest": "^24.9.0",
+    "jest-cli": "^24.9.0"
+  },
+  "dependencies": {
+    "commander": "^3.0.0"
+  }
+}
