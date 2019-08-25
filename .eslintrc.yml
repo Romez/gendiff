@@ -1,6 +1,5 @@
 plugins:
   - jest
-  - babel
   - import
 
 env:
