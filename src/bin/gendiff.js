@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
 import program from 'commander';
+import { version } from '../../package.json';
 
 program
   .description('Compares two configuration files and shows a difference.')
-  .option('-V, --version', 'output the version number')
+  .version(version)
+  .arguments('<firstConfig> <secondConfig>')
+  .option('-f, --format [type]', 'Output format')
   .parse(process.argv);
