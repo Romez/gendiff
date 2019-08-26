@@ -2,6 +2,7 @@
   "name": "@romezzz/gendiff",
   "version": "0.0.1",
   "description": "hexlet second project",
+  "main": "dist/index.js",
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
   },
@@ -10,6 +11,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test-watch": "jest --watchAll",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublishOnly": "npm run build"
   },
@@ -45,6 +47,7 @@
     "jest-cli": "^24.9.0"
   },
   "dependencies": {
-    "commander": "^3.0.0"
+    "commander": "^3.0.0",
+    "lodash": "^4.17.15"
   }
 }
