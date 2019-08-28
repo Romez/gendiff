@@ -1,6 +1,6 @@
 {
   "name": "@romezzz/gendiff",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "hexlet second project",
   "main": "dist/index.js",
   "bin": {
