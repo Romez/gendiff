@@ -16,6 +16,7 @@ program
   .arguments('<firstConfig> <secondConfig>')
   .action((firstConfig, secondConfig) => {
     const diff = genDiff(firstConfig, secondConfig);
+
     console.log('{');
     diff.forEach(({ type, key, value }) => {
       console.log(`${typeSigns[type]} ${key}: ${value}`);
