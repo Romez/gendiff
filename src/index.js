@@ -2,6 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import { has, uniq } from 'lodash';
 
+const typeSigns = {
+  matched: ' ',
+  added: '+',
+  deleted: '-',
+};
+
 export const getDataDiff = (firstConfig, secondConfig) => {
   const allKeys = uniq([...Object.keys(firstConfig), ...Object.keys(secondConfig)]);
 
@@ -31,5 +37,9 @@ export default (firstConfigPath, secondConfigPath) => {
   const secondPath = path.resolve(secondConfigPath);
   const secondConfig = JSON.parse(fs.readFileSync(secondPath, 'utf8'));
 
-  return getDataDiff(firstConfig, secondConfig);
+  const diff = getDataDiff(firstConfig, secondConfig);
+  const rows = diff.map(({ type, key, value }) => `  ${typeSigns[type]} ${key}: ${value}`);
+
+  const result = ['{', ...rows, '}'];
+  return result.join('\n');
 };
