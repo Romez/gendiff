@@ -6,6 +6,5 @@ test('getDataDiff', () => {
 
   const result = genDiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json');
 
-  console.log(result, expected);
-  expect(result).toBe(expected);
+  expect(result).toMatch(expected);
 });
