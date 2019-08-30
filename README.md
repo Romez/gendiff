@@ -6,5 +6,8 @@
 ### Installation
 `npm i -g @romezzz/gendiff`
 
-### Usage
+### Usage json
 [![asciicast](https://asciinema.org/a/264560.svg)](https://asciinema.org/a/264560)
+
+### Usage yaml
+[![asciicast](https://asciinema.org/a/265040.svg)](https://asciinema.org/a/265040)
