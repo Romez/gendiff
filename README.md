@@ -11,3 +11,6 @@
 
 ### Usage yaml
 [![asciicast](https://asciinema.org/a/265040.svg)](https://asciinema.org/a/265040)
+
+### Usage ini
+[![asciicast](https://asciinema.org/a/265054.svg)](https://asciinema.org/a/265054)
