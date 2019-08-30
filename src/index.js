@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { has, uniq } from 'lodash';
+import getParser from './parsers';
 
 const typeSigns = {
   matched: ' ',
@@ -32,10 +33,13 @@ export const getDataDiff = (firstConfig, secondConfig) => {
 
 export default (firstConfigPath, secondConfigPath) => {
   const firstPath = path.resolve(firstConfigPath);
-  const firstConfig = JSON.parse(fs.readFileSync(firstPath, 'utf8'));
-
   const secondPath = path.resolve(secondConfigPath);
-  const secondConfig = JSON.parse(fs.readFileSync(secondPath, 'utf8'));
+
+  const firstConfigData = fs.readFileSync(firstPath, 'utf8');
+  const secondConfigData = fs.readFileSync(secondPath, 'utf8');
+
+  const firstConfig = getParser(path.extname(firstConfigPath))(firstConfigData);
+  const secondConfig = getParser(path.extname(secondConfigPath))(secondConfigData);
 
   const diff = getDataDiff(firstConfig, secondConfig);
   const rows = diff.map(({ type, key, value }) => `  ${typeSigns[type]} ${key}: ${value}`);

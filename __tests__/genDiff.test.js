@@ -1,10 +1,21 @@
 import fs from 'fs';
+import path from 'path';
 import genDiff from '../src';
 
-test('getDataDiff', () => {
-  const expected = fs.readFileSync('__tests__/__fixtures__/result.txt', 'utf8');
+const expected = fs.readFileSync(path.resolve(__dirname, '__fixtures__/result.txt'), 'utf8');
 
-  const result = genDiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json');
+test('json getDataDiff', () => {
+  const beforePath = path.resolve(__dirname, '__fixtures__/before.json');
+  const afterPath = path.resolve(__dirname, '__fixtures__/after.json');
 
+  const result = genDiff(beforePath, afterPath);
+  expect(result).toMatch(expected);
+});
+
+test('yaml getDataDiff', () => {
+  const beforePath = path.resolve(__dirname, '__fixtures__/before.yml');
+  const afterPath = path.resolve(__dirname, '__fixtures__/after.yml');
+
+  const result = genDiff(beforePath, afterPath);
   expect(result).toMatch(expected);
 });

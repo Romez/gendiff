@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "commander": "^3.0.0",
+    "js-yaml": "^3.13.1",
     "lodash": "^4.17.15"
   }
 }
