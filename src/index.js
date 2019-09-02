@@ -1,49 +1,101 @@
 import fs from 'fs';
 import path from 'path';
-import { has, uniq } from 'lodash';
+import _ from 'lodash';
 import getParser from './parsers';
 
-const typeSigns = {
-  matched: ' ',
-  added: '+',
-  deleted: '-',
+const padding = '    ';
+
+const nodeBuilders = [
+  {
+    check: (key, firstConfig, secondConfig) => !_.has(firstConfig, key) && _.has(secondConfig, key),
+    build: (key, __, valueAfter) => ({ type: 'added', key, valueAfter }),
+  },
+  {
+    check: (key, firstConfig, secondConfig) => _.has(firstConfig, key) && !_.has(secondConfig, key),
+    build: (key, valueBefore) => ({ type: 'deleted', key, valueBefore }),
+  },
+  {
+    check: (key, firstConfig, secondConfig) => {
+      const firstValue = firstConfig[key];
+      const secondValue = secondConfig[key];
+      return _.isObject(firstValue) && _.isObject(secondValue);
+    },
+    build: (key, valueBefore, valueAfter, makeAst) => ({ type: 'nested', key, children: makeAst(valueBefore, valueAfter) }),
+  },
+  {
+    check: (key, firstConfig, secondConfig) => firstConfig[key] === secondConfig[key],
+    build: (key, valueBefore) => ({ type: 'unchanged', key, valueBefore }),
+  },
+  {
+    check: (key, firstConfig, secondConfig) => firstConfig[key] !== secondConfig[key],
+    build: (key, valueBefore, valueAfter) => ({
+      type: 'changed',
+      key,
+      valueBefore,
+      valueAfter,
+    }),
+  },
+];
+
+const getNodeBuilder = (key, firstConfig, secondConfig) => nodeBuilders
+  .find(({ check }) => check(key, firstConfig, secondConfig));
+
+export const makeAst = (firstConfig, secondConfig) => {
+  const allKeys = _.union(_.keys(firstConfig), _.keys(secondConfig));
+
+  return allKeys.map((key) => {
+    const { build } = getNodeBuilder(key, firstConfig, secondConfig);
+    return build(key, firstConfig[key], secondConfig[key], makeAst);
+  });
 };
 
-export const getDataDiff = (firstConfig, secondConfig) => {
-  const allKeys = uniq([...Object.keys(firstConfig), ...Object.keys(secondConfig)]);
+const renderObject = (obj, deep = 0) => {
+  const currentDeepPadding = padding.repeat(deep);
 
-  return allKeys.reduce((acc, key) => {
-    if (!has(firstConfig, key) && has(secondConfig, key)) {
-      return acc.concat({ type: 'added', key, value: secondConfig[key] });
-    }
+  const result = Object.keys(obj).map((key) => {
+    const value = _.isObject(obj[key]) ? renderObject(obj[key], deep + 1) : obj[key];
+    return `${currentDeepPadding}    ${key}: ${value}`;
+  }).join('\n');
 
-    if (has(firstConfig, key) && !has(secondConfig, key)) {
-      return acc.concat({ type: 'deleted', key, value: firstConfig[key] });
-    }
+  return ['{', result, `${currentDeepPadding}}`].join('\n');
+};
 
-    if (firstConfig[key] === secondConfig[key]) {
-      return acc.concat({ type: 'matched', key, value: firstConfig[key] });
-    }
+const renders = {
+  added: ({ key, valueAfter }, deep) => {
+    const value = _.isObject(valueAfter) ? renderObject(valueAfter, deep + 1) : valueAfter;
+    return `${padding.repeat(deep)}  + ${key}: ${value}`;
+  },
+  deleted: ({ key, valueBefore }, deep) => {
+    const value = _.isObject(valueBefore) ? renderObject(valueBefore, deep + 1) : valueBefore;
+    return `${padding.repeat(deep)}  - ${key}: ${value}`;
+  },
+  nested: ({ key, children }, deep, render) => `${padding.repeat(deep)}    ${key}: ${render(children, deep + 1, render)}`,
+  unchanged: ({ key, valueBefore }, deep) => {
+    const value = _.isObject(valueBefore) ? renderObject(valueBefore, deep + 1) : valueBefore;
+    return `${padding.repeat(deep)}    ${key}: ${value}`;
+  },
+  changed: (node, deep) => [renders.deleted(node, deep), renders.added(node, deep)],
+};
 
-    return acc
-      .concat({ type: 'deleted', key, value: firstConfig[key] })
-      .concat({ type: 'added', key, value: secondConfig[key] });
-  }, []);
+const render = (data, deep) => {
+  const result = _.flatMap(data, (node) => {
+    const nodeRender = renders[node.type];
+    return nodeRender(node, deep, render);
+  });
+
+  return ['{', ...result, `${padding.repeat(deep)}}`].join('\n');
 };
 
 export default (firstConfigPath, secondConfigPath) => {
-  const firstPath = path.resolve(firstConfigPath);
-  const secondPath = path.resolve(secondConfigPath);
+  const firstConfigData = fs.readFileSync(path.resolve(firstConfigPath), 'utf8');
+  const secondConfigData = fs.readFileSync(path.resolve(secondConfigPath), 'utf8');
 
-  const firstConfigData = fs.readFileSync(firstPath, 'utf8');
-  const secondConfigData = fs.readFileSync(secondPath, 'utf8');
+  const firstConfigParser = getParser(path.extname(firstConfigPath));
+  const secondConfigParser = getParser(path.extname(secondConfigPath));
 
-  const firstConfig = getParser(path.extname(firstConfigPath))(firstConfigData);
-  const secondConfig = getParser(path.extname(secondConfigPath))(secondConfigData);
+  const firstConfig = firstConfigParser(firstConfigData);
+  const secondConfig = secondConfigParser(secondConfigData);
 
-  const diff = getDataDiff(firstConfig, secondConfig);
-  const rows = diff.map(({ type, key, value }) => `  ${typeSigns[type]} ${key}: ${value}`);
-
-  const result = ['{', ...rows, '}'];
-  return result.join('\n');
+  const ast = makeAst(firstConfig, secondConfig);
+  return render(ast, 0);
 };
