@@ -14,3 +14,6 @@
 
 ### Usage ini
 [![asciicast](https://asciinema.org/a/265054.svg)](https://asciinema.org/a/265054)
+
+### Nested data
+[![asciicast](https://asciinema.org/a/266000.svg)](https://asciinema.org/a/266000)
