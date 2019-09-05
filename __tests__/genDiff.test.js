@@ -5,15 +5,15 @@ import genDiff from '../src';
 const expected = fs.readFileSync(path.resolve(__dirname, '__fixtures__/result.txt'), 'utf8');
 
 const dataSet = [
-  ['before.json', 'after.json'],
-  ['before.yml', 'after.yml'],
-  ['before.ini', 'after.ini'],
+  ['before.json', 'after.json', 'default'],
+  ['before.yml', 'after.yml', 'default'],
+  ['before.ini', 'after.ini', 'default'],
 ];
 
-test.each(dataSet)('getDataDiff(%s, %s)', (beforeFileName, afterFileName) => {
+test.each(dataSet)('genDiff(%s, %s, $s)', (beforeFileName, afterFileName, format) => {
   const beforePath = path.resolve(__dirname, '__fixtures__', beforeFileName);
   const afterPath = path.resolve(__dirname, '__fixtures__', afterFileName);
 
-  const result = genDiff(beforePath, afterPath);
+  const result = genDiff(beforePath, afterPath, format);
   expect(result).toMatch(expected);
 });
