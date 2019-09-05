@@ -2,31 +2,25 @@ import _ from 'lodash';
 
 const padding = '    ';
 
-const renderObject = (obj, deep = 0) => {
+const renderValue = (value, deep) => {
+  if (!_.isObject(value)) {
+    return value;
+  }
+
   const currentDeepPadding = padding.repeat(deep);
 
-  const result = Object.keys(obj).map((key) => {
-    const value = _.isObject(obj[key]) ? renderObject(obj[key], deep + 1) : obj[key];
-    return `${currentDeepPadding}    ${key}: ${value}`;
-  }).join('\n');
+  const result = Object.keys(value)
+    .map((key) => `${currentDeepPadding}    ${key}: ${renderValue(value[key], deep + 1)}`)
+    .join('\n');
 
   return ['{', result, `${currentDeepPadding}}`].join('\n');
 };
 
 const renders = {
-  added: ({ key, valueAfter }, deep) => {
-    const value = _.isObject(valueAfter) ? renderObject(valueAfter, deep + 1) : valueAfter;
-    return `${padding.repeat(deep)}  + ${key}: ${value}`;
-  },
-  removed: ({ key, valueBefore }, deep) => {
-    const value = _.isObject(valueBefore) ? renderObject(valueBefore, deep + 1) : valueBefore;
-    return `${padding.repeat(deep)}  - ${key}: ${value}`;
-  },
+  added: ({ key, valueAfter }, deep) => `${padding.repeat(deep)}  + ${key}: ${renderValue(valueAfter, deep + 1)}`,
+  removed: ({ key, valueBefore }, deep) => `${padding.repeat(deep)}  - ${key}: ${renderValue(valueBefore, deep + 1)}`,
   nested: ({ key, children }, deep, render) => `${padding.repeat(deep)}    ${key}: ${render(children, deep + 1, render)}`,
-  unchanged: ({ key, valueBefore }, deep) => {
-    const value = _.isObject(valueBefore) ? renderObject(valueBefore, deep + 1) : valueBefore;
-    return `${padding.repeat(deep)}    ${key}: ${value}`;
-  },
+  unchanged: ({ key, valueBefore }, deep) => `${padding.repeat(deep)}    ${key}: ${renderValue(valueBefore, deep)}`,
   updated: (node, deep) => [renders.removed(node, deep), renders.added(node, deep)],
 };
 
