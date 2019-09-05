@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import getParser from './parsers';
-import getFormatter from './formaters';
+import getFormatter from './formatters';
 
 const nodeBuilders = [
   {
@@ -11,7 +11,7 @@ const nodeBuilders = [
   },
   {
     check: (key, firstConfig, secondConfig) => _.has(firstConfig, key) && !_.has(secondConfig, key),
-    build: (key, valueBefore) => ({ type: 'deleted', key, valueBefore }),
+    build: (key, valueBefore) => ({ type: 'removed', key, valueBefore }),
   },
   {
     check: (key, firstConfig, secondConfig) => {
@@ -28,7 +28,7 @@ const nodeBuilders = [
   {
     check: (key, firstConfig, secondConfig) => firstConfig[key] !== secondConfig[key],
     build: (key, valueBefore, valueAfter) => ({
-      type: 'changed',
+      type: 'updated',
       key,
       valueBefore,
       valueAfter,
@@ -59,7 +59,7 @@ export default (firstConfigPath, secondConfigPath, format) => {
   const secondConfig = secondConfigParser(secondConfigData);
 
   const ast = makeAst(firstConfig, secondConfig);
-  const render = getFormatter(format);
+  const formatAst = getFormatter(format);
 
-  return render(ast);
+  return formatAst(ast);
 };

@@ -18,7 +18,7 @@ const renders = {
     const value = _.isObject(valueAfter) ? renderObject(valueAfter, deep + 1) : valueAfter;
     return `${padding.repeat(deep)}  + ${key}: ${value}`;
   },
-  deleted: ({ key, valueBefore }, deep) => {
+  removed: ({ key, valueBefore }, deep) => {
     const value = _.isObject(valueBefore) ? renderObject(valueBefore, deep + 1) : valueBefore;
     return `${padding.repeat(deep)}  - ${key}: ${value}`;
   },
@@ -27,7 +27,7 @@ const renders = {
     const value = _.isObject(valueBefore) ? renderObject(valueBefore, deep + 1) : valueBefore;
     return `${padding.repeat(deep)}    ${key}: ${value}`;
   },
-  changed: (node, deep) => [renders.deleted(node, deep), renders.added(node, deep)],
+  updated: (node, deep) => [renders.removed(node, deep), renders.added(node, deep)],
 };
 
 const render = (data, deep = 0) => {
