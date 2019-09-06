@@ -1,6 +1,7 @@
 import plain from './plain';
-import base from './base';
+import pretty from './pretty';
+import json from './json';
 
-const formatters = { base, plain };
+const formatters = { pretty, plain, json };
 
 export default (format) => formatters[format];

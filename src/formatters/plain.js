@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 const valueRenders = [
   {
-    check: (value) => /^\d+$/.test(value),
+    check: _.isNumber,
     render: _.identity,
   },
   {

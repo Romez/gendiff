@@ -18,5 +18,5 @@
 ### Nested data
 [![asciicast](https://asciinema.org/a/266000.svg)](https://asciinema.org/a/266000)
 
-### Output formates
-[![asciicast](https://asciinema.org/a/266212.svg)](https://asciinema.org/a/266212)
+### Output formats: pretty(defalut), plain, json
+[![asciicast](https://asciinema.org/a/266347.svg)](https://asciinema.org/a/266347)
