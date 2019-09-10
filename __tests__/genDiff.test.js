@@ -3,21 +3,25 @@ import path from 'path';
 import genDiff from '../src';
 
 const dataSet = [
-  ['before.json', 'after.json', 'pretty', 'result-pretty.txt'],
-  ['before.yml', 'after.yml', 'pretty', 'result-pretty.txt'],
-  ['before.ini', 'after.ini', 'pretty', 'result-pretty.txt'],
-  ['before.json', 'after.json', 'plain', 'result-plain.txt'],
-  ['before.yml', 'after.yml', 'plain', 'result-plain.txt'],
-  ['before.ini', 'after.ini', 'plain', 'result-plain.txt'],
-  ['before.json', 'after.json', 'json', 'result.json'],
-  ['before.yml', 'after.yml', 'json', 'result.json'],
-  ['before.ini', 'after.ini', 'json', 'result.json'],
+  ['.json', 'pretty'],
+  ['.yml', 'pretty'],
+  ['.ini', 'pretty'],
+  ['.json', 'plain'],
+  ['.yml', 'plain'],
+  ['.ini', 'plain'],
+  ['.json', 'json'],
+  ['.yml', 'json'],
+  ['.ini', 'json'],
 ];
 
-test.each(dataSet)('genDiff(%s, %s, %s)', (beforeFileName, afterFileName, format, expectedFilename) => {
-  const beforePath = path.resolve(__dirname, '__fixtures__', beforeFileName);
-  const afterPath = path.resolve(__dirname, '__fixtures__', afterFileName);
-  const expected = fs.readFileSync(path.resolve(__dirname, '__fixtures__', expectedFilename), 'utf8');
+test.each(dataSet)('genDiff(%s, %s, %s)', (ext, format) => {
+  const dir = path.resolve(__dirname, '__fixtures__');
+
+  const beforePath = path.format({ dir, name: 'before', ext });
+  const afterPath = path.format({ dir, name: 'after', ext });
+  const expectedPath = path.format({ dir, name: `result-${format}.txt` });
+
+  const expected = fs.readFileSync(expectedPath, 'utf8');
 
   const result = genDiff(beforePath, afterPath, format);
 
