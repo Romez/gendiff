@@ -50,13 +50,12 @@ export const makeAst = (firstConfig, secondConfig) => {
 
 export default (firstConfigPath, secondConfigPath, format) => {
   const firstConfigData = fs.readFileSync(path.resolve(firstConfigPath), 'utf8');
+  const firstConfigParse = getParser(path.extname(firstConfigPath).slice(1));
+  const firstConfig = firstConfigParse(firstConfigData);
+
   const secondConfigData = fs.readFileSync(path.resolve(secondConfigPath), 'utf8');
-
-  const firstConfigParser = getParser(path.extname(firstConfigPath));
-  const secondConfigParser = getParser(path.extname(secondConfigPath));
-
-  const firstConfig = firstConfigParser(firstConfigData);
-  const secondConfig = secondConfigParser(secondConfigData);
+  const secondConfigParse = getParser(path.extname(secondConfigPath).slice(1));
+  const secondConfig = secondConfigParse(secondConfigData);
 
   const ast = makeAst(firstConfig, secondConfig);
   const formatAst = getFormatter(format);
