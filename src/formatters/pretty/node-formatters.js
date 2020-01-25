@@ -24,13 +24,4 @@ const nodeFormatters = {
   updated: (node, deep) => [nodeFormatters.removed(node, deep), nodeFormatters.added(node, deep)],
 };
 
-const format = (data, deep = 0) => {
-  const result = _.flatMap(data, (node) => {
-    const formatNode = nodeFormatters[node.type];
-    return formatNode(node, deep + 1, format);
-  }).map((renderedNode) => `${padding.repeat(deep)}  ${renderedNode}`);
-
-  return ['{', ...result, `${padding.repeat(deep)}}`].join('\n');
-};
-
-export default format;
+export default nodeFormatters;

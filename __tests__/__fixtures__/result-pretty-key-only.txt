@@ -1,0 +1,36 @@
+{
+    host
+    timeout
+  - proxy
+  - follow
+    common: {
+        setting1
+      - setting2
+        setting3: {
+          + key
+        }
+        setting6: {
+            key
+          + ops
+        }
+      + follow
+      + setting4
+      + setting5: {
+            key5
+        }
+    }
+    group1: {
+        baz
+        foo
+        nest: {
+          - key
+        }
+    }
+  - group2: {
+        abc
+    }
+  + verbose
+  + group3: {
+        fee
+    }
+}

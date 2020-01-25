@@ -8,8 +8,9 @@ program
   .description('Compares two configuration files and shows a difference.')
   .version(version)
   .arguments('<firstConfig> <secondConfig>')
-  .option('-f, --format [type]', 'Output format', 'pretty')
+  .option('-f, --format [type]', 'Output format [pretty, json, plain]', 'pretty')
+  .option('-k, --key-only', 'Generate only keys diff', false)
   .action((firstConfig, secondConfig, options) => {
-    console.log(genDiff(firstConfig, secondConfig, options.format));
+    console.log(genDiff(firstConfig, secondConfig, options));
   })
   .parse(process.argv);
