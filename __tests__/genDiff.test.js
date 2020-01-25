@@ -23,7 +23,7 @@ test.each(dataSet)('genDiff(%s, %s, %s)', (ext, format) => {
 
   const expected = fs.readFileSync(expectedPath, 'utf8');
 
-  const result = genDiff(beforePath, afterPath, { format });
+  const result = genDiff(beforePath, afterPath, { format, keyOnly: false });
 
   expect(result).toMatch(expected);
 });
@@ -32,6 +32,9 @@ const onlyKeySet = [
   ['.json', 'pretty'],
   ['.yml', 'pretty'],
   ['.ini', 'pretty'],
+  ['.json', 'json'],
+  ['.yml', 'json'],
+  ['.ini', 'json'],
 ];
 
 test.each(onlyKeySet)('genDiff(%s, %s, %s)', (ext, format) => {

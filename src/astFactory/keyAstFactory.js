@@ -1,55 +1,71 @@
 import _ from 'lodash';
 
+const makeAddedKey = (value, key) => ({
+  type: 'added',
+  key,
+  children: _.isObject(value) ? _.map(value, makeAddedKey) : [],
+});
+
+const makeRemovedKey = (value, key) => ({
+  type: 'removed',
+  key,
+  children: _.isObject(value) ? _.map(value, makeRemovedKey) : [],
+});
+
+const makeNestedKey = (children, key) => ({
+  type: 'nested',
+  key,
+  children,
+});
+
+const makeUnchangedKey = (key) => ({
+  type: 'unchanged',
+  key,
+});
+
+const makeUpdatedKey = (makeKey, value, key) => ({
+  type: 'updated',
+  key,
+  children: _.map(value, makeKey),
+});
+
 const keyBuilders = [
   {
     check: (key, firstConfig, secondConfig) => !_.has(firstConfig, key) && _.has(secondConfig, key),
-    build: (key, valueBefore, valueAfter) => ({
-      type: 'added',
-      key,
-      valueBefore,
-      valueAfter,
-    }),
+    build: (key, __, valueAfter) => makeAddedKey(valueAfter, key),
   },
   {
     check: (key, firstConfig, secondConfig) => _.has(firstConfig, key) && !_.has(secondConfig, key),
-    build: (key, valueBefore, valueAfter) => ({
-      type: 'removed',
-      key,
-      valueBefore,
-      valueAfter,
-    }),
+    build: (key, valueBefore) => makeRemovedKey(valueBefore, key),
   },
   {
     check: (key, firstConfig, secondConfig) => {
-      const secondValue = secondConfig[key];
-      return _.isObject(firstConfig[key]) && _.isObject(secondValue);
+      const valueBefore = _.get(firstConfig, key);
+      const valueAfter = _.get(secondConfig, key);
+
+      return _.isObject(valueBefore) && _.isObject(valueAfter);
     },
-    build: (key, valueBefore, valueAfter, makeAst) => ({
-      type: 'nested',
-      key,
-      children: makeAst(valueBefore, valueAfter),
-    }),
+    build: (key, valueBefore, valueAfter, makeAst) => {
+      const children = makeAst(valueBefore, valueAfter);
+      return makeNestedKey(children, key);
+    },
   },
   {
     check: (key, firstConfig, secondConfig) => {
-      const secondValue = secondConfig[key];
-      return !_.isObject(firstConfig[key]) && !_.isObject(secondValue);
+      const valueBefore = _.get(firstConfig, key);
+      const valueAfter = _.get(secondConfig, key);
+
+      return !_.isObject(valueBefore) && !_.isObject(valueAfter);
     },
-    build: (key, valueBefore, valueAfter) => ({
-      type: 'unchanged',
-      key,
-      valueBefore,
-      valueAfter,
-    }),
+    build: (key) => makeUnchangedKey(key),
   },
   {
     check: () => true,
-    build: (key, valueBefore, valueAfter) => ({
-      type: 'updated',
-      key,
-      valueBefore,
-      valueAfter,
-    }),
+    build: (key, valueBefore, valueAfter) => {
+      const makeKey = _.isObject(valueBefore) ? makeRemovedKey : makeAddedKey;
+      const value = _.isObject(valueBefore) ? valueBefore : valueAfter;
+      return makeUpdatedKey(makeKey, value, key);
+    },
   },
 ];
 
@@ -61,7 +77,7 @@ const makeKeyAst = (firstConfig, secondConfig) => {
 
   return allKeys.map((key) => {
     const { build } = getKeyBuilder(key, firstConfig, secondConfig);
-    return build(key, firstConfig[key], secondConfig[key], makeKeyAst);
+    return build(key, _.get(firstConfig, key), _.get(secondConfig, key), makeKeyAst);
   });
 };
 

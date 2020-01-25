@@ -2,31 +2,40 @@ import _ from 'lodash';
 
 const padding = '    ';
 
-const keyFormatValue = (value, deep, sign = ' ') => {
-  if (!_.isObject(value)) {
-    return '';
+const formatAdded = ({ children, key }, deep) => {
+  if (_.isEmpty(children)) {
+    return `+ ${key}`;
   }
-
   const currentDeepPadding = padding.repeat(deep);
 
-  const result = Object.keys(value)
-    .map((key) => `${currentDeepPadding}  ${sign} ${key}${keyFormatValue(value[key], deep + 1)}`)
-    .join('\n');
+  const result = children.map((child) => `  ${currentDeepPadding}${formatAdded(child, deep + 1)}`);
 
-  return [': {', result, `${currentDeepPadding}}`].join('\n');
+  return [`+ ${key}: {`, result.join('\n'), `${currentDeepPadding}}`].join('\n');
 };
 
+const formatRemoved = ({ children, key }, deep) => {
+  if (_.isEmpty(children)) {
+    return `- ${key}`;
+  }
+  const currentDeepPadding = padding.repeat(deep);
+
+  const result = children.map((child) => `  ${currentDeepPadding}${formatRemoved(child, deep + 1)}`);
+
+  return [`- ${key}: {`, result.join('\n'), `${currentDeepPadding}}`].join('\n');
+};
+
+const formatNested = ({ children, key }, deep, render) => [`  ${key}: `, render(children, deep)].join('');
+
+const formatUnchanged = ({ key }) => `  ${key}`;
+
+const formatUpdated = ({ children, key }, deep, render) => [`  ${key}: `, render(children, deep)].join('');
+
 const keyFormatters = {
-  added: ({ key, valueAfter }, deep) => `+ ${key}${keyFormatValue(valueAfter, deep)}`,
-  removed: ({ key, valueBefore }, deep) => `- ${key}${keyFormatValue(valueBefore, deep)}`,
-  nested: ({ key, children }, deep, render) => `  ${key}: ${render(children, deep, render)}`,
-  unchanged: ({ key, valueBefore }, deep) => `  ${key}${keyFormatValue(valueBefore, deep)}`,
-  updated: ({ key, valueBefore, valueAfter }, deep) => {
-    if (_.isObject(valueBefore)) {
-      return `  ${key}${keyFormatValue(valueBefore, deep, '-')}`;
-    }
-    return `  ${key}${keyFormatValue(valueAfter, deep, '+')}`;
-  },
+  added: (node, deep) => formatAdded(node, deep),
+  removed: (node, deep) => formatRemoved(node, deep),
+  nested: (node, deep, render) => formatNested(node, deep, render),
+  unchanged: (node) => formatUnchanged(node),
+  updated: (node, deep, render) => formatUpdated(node, deep, render),
 };
 
 export default keyFormatters;

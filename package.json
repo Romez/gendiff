@@ -1,7 +1,7 @@
 {
   "name": "@romezzz/gendiff",
   "version": "1.4.1",
-  "description": "hexlet second project",
+  "description": "Compare two configuration files and shows a difference.",
   "main": "dist/index.js",
   "bin": {
     "gendiff": "dist/bin/gendiff.js"

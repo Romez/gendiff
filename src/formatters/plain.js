@@ -34,12 +34,18 @@ const renders = {
   ].join(' '),
 };
 
-const render = (data, path = []) => data
-  .filter(({ type }) => type !== 'unchanged')
-  .map((node) => {
-    const nodeRender = renders[node.type];
-    return nodeRender(node, path, render);
-  })
-  .join('\n');
+const render = (data, keyOnly) => {
+  const renderAst = (ast, path = []) => {
+    return ast
+      .filter(({ type }) => type !== 'unchanged')
+      .map((node) => {
+        const nodeRender = renders[node.type];
+        return nodeRender(node, path, renderAst);
+      })
+      .join('\n');
+  };
+
+  return renderAst(data);
+};
 
 export default render;

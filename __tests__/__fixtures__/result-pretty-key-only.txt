@@ -16,7 +16,7 @@
       + follow
       + setting4
       + setting5: {
-            key5
+          + key5
         }
     }
     group1: {
@@ -27,10 +27,10 @@
         }
     }
   - group2: {
-        abc
+      - abc
     }
   + verbose
   + group3: {
-        fee
+      + fee
     }
 }
