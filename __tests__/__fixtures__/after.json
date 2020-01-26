@@ -1,7 +1,7 @@
 {
   "timeout": 20,
   "verbose": true,
-  "host": "hexlet.io",
+  "host": "romezzz.io",
   "common": {
     "follow": false,
     "setting1": "Value 1",
@@ -21,7 +21,12 @@
   "group1": {
     "foo": "bar",
     "baz": "bars",
-    "nest": "str"
+    "nest": "str",
+    "gee": {
+      "jee": {
+        "fee": "ok"
+      }
+    }
   },
 
   "group3": {

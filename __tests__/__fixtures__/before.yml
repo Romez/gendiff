@@ -1,4 +1,4 @@
-host: 'hexlet.io'
+host: 'romezzz.io'
 timeout: 50
 proxy: '123.234.53.22'
 follow: false
@@ -13,5 +13,8 @@ group1:
   foo: 'bar'
   nest:
     key: 'value'
+  gee:
+    jee:
+      fee: 'ok'
 group2:
   abc: 12345

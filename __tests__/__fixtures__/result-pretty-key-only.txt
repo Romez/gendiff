@@ -25,6 +25,11 @@
         nest: {
           - key
         }
+        gee: {
+            jee: {
+                fee
+            }
+        }
     }
   - group2: {
       - abc

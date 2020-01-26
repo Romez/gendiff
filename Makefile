@@ -25,3 +25,7 @@ run:
 
 run-key-only:
 	npx babel-node src/bin/gendiff.js -k __tests__/__fixtures__/before.json __tests__/__fixtures__/after.json
+
+link:
+	make build
+	npm link

@@ -1,0 +1,12 @@
+Key 'proxy' was removed
+Key 'follow' was removed
+Key 'common.setting2' was removed
+Key 'common.setting3.key' was added
+Key 'common.setting6.ops' was added
+Key 'common.follow' was added
+Key 'common.setting4' was added
+Key 'common.setting5' was added with: [complex key]
+Key 'group1.nest.key' was removed
+Key 'group2' was removed
+Key 'verbose' was added
+Key 'group3' was added with: [complex key]

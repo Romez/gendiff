@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 import genDiff from '../src';
 
@@ -14,39 +14,34 @@ const dataSet = [
   ['.ini', 'json'],
 ];
 
-test.each(dataSet)('genDiff(%s, %s, %s)', (ext, format) => {
-  const dir = path.resolve(__dirname, '__fixtures__');
+describe('witout keys', () => {
+  test.each(dataSet)('gen-diff(%s, %s, %s)', async (ext, format) => {
+    const dir = path.resolve(__dirname, '__fixtures__');
 
-  const beforePath = path.format({ dir, name: 'before', ext });
-  const afterPath = path.format({ dir, name: 'after', ext });
-  const expectedPath = path.format({ dir, name: `result-${format}.txt` });
+    const beforePath = path.format({ dir, name: 'before', ext });
+    const afterPath = path.format({ dir, name: 'after', ext });
+    const expectedPath = path.format({ dir, name: `result-${format}.txt` });
 
-  const expected = fs.readFileSync(expectedPath, 'utf8');
+    const expected = await fs.readFile(expectedPath, 'utf8');
 
-  const result = genDiff(beforePath, afterPath, { format, keyOnly: false });
+    const result = genDiff(beforePath, afterPath, { format, keyOnly: false });
 
-  expect(result).toMatch(expected);
+    expect(result).toMatch(expected);
+  });
 });
 
-const onlyKeySet = [
-  ['.json', 'pretty'],
-  ['.yml', 'pretty'],
-  ['.ini', 'pretty'],
-  ['.json', 'json'],
-  ['.yml', 'json'],
-  ['.ini', 'json'],
-];
+describe('with key only', () => {
+  test.each(dataSet)('gen-diff-key-only(%s, %s, %s)', async (ext, format) => {
+    const dir = path.resolve(__dirname, '__fixtures__');
 
-test.each(onlyKeySet)('genDiff(%s, %s, %s)', (ext, format) => {
-  const dir = path.resolve(__dirname, '__fixtures__');
+    const beforePath = path.format({ dir, name: 'before', ext });
+    const afterPath = path.format({ dir, name: 'after', ext });
+    const expectedPath = path.format({ dir, name: `result-${format}-key-only.txt` });
 
-  const beforePath = path.format({ dir, name: 'before', ext });
-  const afterPath = path.format({ dir, name: 'after', ext });
-  const expectedPath = path.format({ dir, name: `result-${format}-key-only.txt` });
+    const expected = await fs.readFile(expectedPath, 'utf8');
 
-  const expected = fs.readFileSync(expectedPath, 'utf8');
+    const result = genDiff(beforePath, afterPath, { format, keyOnly: true });
 
-  const result = genDiff(beforePath, afterPath, { format, keyOnly: true });
-
-  expect(result).toMatch(expected);
+    expect(result).toMatch(expected);
+  });
 });

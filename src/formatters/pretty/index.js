@@ -1,1 +1,1 @@
-export { default } from './pretty';
+export { default } from './formatPretty';

@@ -1,42 +1,47 @@
 import _ from 'lodash';
 
-const makeAddedKey = (value, key) => ({
+export const filterAst = (check, nodes) => nodes
+  .filter(check)
+  .map((node) => _.set(node, 'children', filterAst(check, _.get(node, 'children'))));
+
+const makeAddedNode = (value, key) => ({
   type: 'added',
   key,
-  children: _.isObject(value) ? _.map(value, makeAddedKey) : [],
+  children: _.isObject(value) ? _.map(value, makeAddedNode) : [],
 });
 
-const makeRemovedKey = (value, key) => ({
+const makeRemovedNode = (value, key) => ({
   type: 'removed',
   key,
-  children: _.isObject(value) ? _.map(value, makeRemovedKey) : [],
+  children: _.isObject(value) ? _.map(value, makeRemovedNode) : [],
 });
 
-const makeNestedKey = (children, key) => ({
+const makeNestedNode = (children, key) => ({
   type: 'nested',
   key,
   children,
 });
 
-const makeUnchangedKey = (key) => ({
+const makeUnchangedNode = (key) => ({
   type: 'unchanged',
   key,
+  children: [],
 });
 
-const makeUpdatedKey = (makeKey, value, key) => ({
+const makeUpdatedNode = (children, key) => ({
   type: 'updated',
   key,
-  children: _.map(value, makeKey),
+  children,
 });
 
 const keyBuilders = [
   {
     check: (key, firstConfig, secondConfig) => !_.has(firstConfig, key) && _.has(secondConfig, key),
-    build: (key, __, valueAfter) => makeAddedKey(valueAfter, key),
+    build: (key, __, valueAfter) => makeAddedNode(valueAfter, key),
   },
   {
     check: (key, firstConfig, secondConfig) => _.has(firstConfig, key) && !_.has(secondConfig, key),
-    build: (key, valueBefore) => makeRemovedKey(valueBefore, key),
+    build: (key, valueBefore) => makeRemovedNode(valueBefore, key),
   },
   {
     check: (key, firstConfig, secondConfig) => {
@@ -47,7 +52,7 @@ const keyBuilders = [
     },
     build: (key, valueBefore, valueAfter, makeAst) => {
       const children = makeAst(valueBefore, valueAfter);
-      return makeNestedKey(children, key);
+      return makeNestedNode(children, key);
     },
   },
   {
@@ -57,14 +62,14 @@ const keyBuilders = [
 
       return !_.isObject(valueBefore) && !_.isObject(valueAfter);
     },
-    build: (key) => makeUnchangedKey(key),
+    build: (key) => makeUnchangedNode(key),
   },
   {
     check: () => true,
     build: (key, valueBefore, valueAfter) => {
-      const makeKey = _.isObject(valueBefore) ? makeRemovedKey : makeAddedKey;
+      const makeChild = _.isObject(valueBefore) ? makeRemovedNode : makeAddedNode;
       const value = _.isObject(valueBefore) ? valueBefore : valueAfter;
-      return makeUpdatedKey(makeKey, value, key);
+      return makeUpdatedNode(_.map(value, makeChild), key);
     },
   },
 ];

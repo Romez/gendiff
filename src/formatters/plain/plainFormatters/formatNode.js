@@ -23,8 +23,7 @@ const renderValue = (value) => {
   const { render } = valueRenders.find(({ check }) => check(value));
   return render(value);
 };
-
-const renders = {
+const nodeRenders = {
   added: ({ key, valueAfter }, path) => `Property '${[...path, key].join('.')}' was added with value: ${renderValue(valueAfter)}`,
   removed: ({ key }, path) => `Property '${[...path, key].join('.')}' was removed`,
   nested: ({ key, children }, path, render) => render(children, [...path, key]),
@@ -34,18 +33,25 @@ const renders = {
   ].join(' '),
 };
 
-const render = (data, keyOnly) => {
-  const renderAst = (ast, path = []) => {
-    return ast
-      .filter(({ type }) => type !== 'unchanged')
-      .map((node) => {
-        const nodeRender = renders[node.type];
-        return nodeRender(node, path, renderAst);
-      })
-      .join('\n');
-  };
+const filterUnchanged = (node) => {
+  const { type, children } = node;
 
-  return renderAst(data);
+  if (type === 'unchanged') {
+    return false;
+  }
+
+  if (type === 'nested') {
+    return children.filter(filterUnchanged).length > 0;
+  }
+
+  return true;
 };
+
+const renderAst = (ast, path) => ast
+  .filter(filterUnchanged)
+  .map((node) => _.get(nodeRenders, _.get(node, 'type'))(node, path, renderAst))
+  .join('\n');
+
+const render = (ast) => renderAst(ast, []);
 
 export default render;
