@@ -76,3 +76,6 @@ Compare two configuration files and shows a difference.
 
 ### Output formats: pretty(defalut), plain, json
 [![asciicast](https://asciinema.org/a/266347.svg)](https://asciinema.org/a/266347)
+
+### Key only output:
+[![asciicast](https://asciinema.org/a/296058.svg)](https://asciinema.org/a/296058)

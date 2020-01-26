@@ -1,6 +1,6 @@
 {
   "name": "@romezzz/gendiff",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Compare two configuration files and shows a difference.",
   "main": "dist/index.js",
   "bin": {
@@ -20,7 +20,13 @@
     "url": "git+https://github.com/Romez/backend-project-lvl2.git"
   },
   "keywords": [
-    "diff"
+    "diff",
+    "keys",
+    "json",
+    "yaml",
+    "plain",
+    "compare",
+    "files"
   ],
   "author": "Roman Ushakov",
   "license": "MIT",
