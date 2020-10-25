@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { filterAst } from '../../../astFactory/keyAstFactory';
+import { filterAst } from '../../astFactory/keyAstFactory';
 
 const formatAdded = ({ children, key }, path) => {
   if (_.isEmpty(children)) {
